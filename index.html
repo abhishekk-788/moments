@@ -197,6 +197,32 @@
             },
         ];
 
+        document.addEventListener("DOMContentLoaded", function () {
+            const head = document.head;
+            
+            pages.forEach(page => {
+                // Preload images
+                (page.img || []).forEach(src => {
+                    const link = document.createElement("link");
+                    link.rel = "preload";
+                    link.as = "image";
+                    link.href = src;
+                    head.appendChild(link);
+                });
+
+                // Preload audio
+                (page.audio || []).forEach(src => {
+                    const link = document.createElement("link");
+                    link.rel = "preload";
+                    link.as = "audio";
+                    link.href = src;
+                    head.appendChild(link);
+                });
+            });
+
+            console.log("Preloading links added.");
+        });
+
         let currentPage = 0;
         let start = true;
         const title = document.getElementById("page-title");
@@ -264,8 +290,8 @@
         });
 
         document.getElementById("prev").addEventListener("click", () => {
-            if(!start) currentPage = (currentPage - 1 + pages.length) % pages.length;
-            else if(currentPage != 0) { 
+            if (!start) currentPage = (currentPage - 1 + pages.length) % pages.length;
+            else if (currentPage != 0) {
                 currentPage = (currentPage - 1);
                 start = false;
             }
