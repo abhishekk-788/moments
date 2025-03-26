@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Interactive Multi-Page Site</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Patrick+Hand&display=swap');
+
+        body {
+            background-color: #f5f0e1;
+            font-family: 'Patrick Hand', cursive;
+            overflow: hidden;
+        }
+
+        .arrow {
+            font-size: 3rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: black;
+            z-index: 1000;
+        }
+
+        .arrow i {
+            font-size: 50px;
+        }
+
+        .audio-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #fff;
+            border-radius: 20px;
+        }
+
+        .image-stack {
+            position: relative;
+            height: 300px;
+            /* Adjust as needed */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            /* Prevents overflow */
+        }
+
+        .image-stack img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+
+        .text-box {
+            padding: 20px;
+            background: rgba(255, 230, 204, 0.9);
+            border-radius: 15px;
+            box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.15);
+            font-size: 1.8rem;
+            font-weight: bold;
+            font-family: 'Dancing Script', cursive;
+            margin-bottom: 15px;
+        }
+
+        .sticky-note {
+            background: #fffa8c;
+            border-radius: 10px;
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.6rem;
+            font-family: 'Patrick Hand', cursive;
+            display: inline-block;
+            margin-top: 40px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+</head>
+
+<body class="flex flex-col justify-center items-center h-screen w-screen relative text-gray-800">
+
+    <div class="w-11/12 md:w-3/4 text-center p-8 bg-white rounded-xl shadow-lg border-4 border-gray-300 max-w-md">
+        <h1 id="page-title" class="text-3xl"></h1>
+        <br>
+        <div id="content-container"></div>
+        <div class="relative image-stack mt-6" id="image-container"></div>
+        <div id="audio-container"></div>
+        <p class="sticky-note">Click on the below arrows</p>
+    </div>
+
+    <button id="prev" class="fixed bottom-5 left-5 arrow">
+        <img src="icons/left-arrow.svg" alt="Previous" class="w-16 h-16 p-2">
+    </button>
+    <button id="next" class="fixed bottom-5 right-5 arrow">
+        <img src="icons/right-arrow.svg" alt="Next" class="w-16 h-16 p-2">
+    </button>
+
+
+    <script>
+        const pages = [
+            {
+                title: "Hi <span style='text-decoration: line-through;'>my love</span> Jyoti,",
+                texts: [
+                    "You told me that you just want to be friends. Here are few moments I would love to share.",
+                    "Let me take you through those memories!"
+                ],
+                img: [],
+                audio: []
+            },
+            { title: "Always Thinking About You Moment", img: ["images/always-thinking-about-you-moment.png"], texts: [], audio: [] },
+            { title: "Besabar Moment", img: ["images/besabar.png"], texts: [], audio: [] },
+            { title: "Bike Moment", img: ["images/bike-moment.png"], texts: ["We dream to go on bike ride"], audio: [] },
+            { title: "Possessive Moment", img: ["images/chota_sa_moment-1.png"], texts: [], audio: [] },
+            { title: "Lifetime Face Dekhna Moment", img: ["images/cute_face_moment.png"], texts: [], audio: [] },
+            { title: "Bartan Dhona Moment", img: ["images/cute_moment.png"], texts: [], audio: [] },
+            { title: "Daru Promise Moment", img: ["images/daru_promise.png"], texts: [], audio: [] },
+            { title: "Feelings Ki Kadar Moment", img: ["images/feelings_ki_kadar.png"], texts: [], audio: [] },
+            { title: "Phass Gaye Moment", img: ["images/fhass-gaye.png"], texts: [], audio: [] },
+            { title: "Mumbai First Meeting Moment", img: ["images/first-meeting.png"], texts: [], audio: [] },
+            { title: "First Moment", img: ["images/gf_moment.png"], texts: [], audio: [] },
+            { title: "Hug Karlo", img: ["images/hug_karlo.png"], texts: [], audio: [] },
+            { title: "Jigar Ka Tukda", img: ["images/jigar_ka_tukda.png"], texts: [], audio: [] },
+            { title: "Kahi Nhi Jayoge", img: ["images/kahi_nhi_jayoge.png"], texts: [], audio: [] },
+            { title: "Ladki Pighal Gayi Moment", img: ["images/ladki_pighal_gayi_moment.png"], texts: [], audio: [] },
+            { title: "Ladki Sharma Gayi Moment", img: ["images/ladki_sharma_gayi_moment.png"], texts: [], audio: [] },
+            { title: "Longest Call Moment", img: ["images/longest_call_moment.jpeg"], texts: [], audio: [] },
+            { title: "Luckiest", img: ["images/luckiest.png"], texts: [], audio: [] },
+            { title: "Mere Baare Mein Kya Sochti Moment", img: ["images/mere_baare_mein_kya_sochti_moment.png"], texts: [], audio: [] },
+            { title: "Meri Heroine", img: ["images/meri_heroine.png"], texts: [], audio: [] },
+            { title: "Motivation", img: ["images/motivation.png"], texts: [], audio: [] },
+            { title: "Chod Mat dena moment", img: ["images/chod_mat_dena.png"], texts: [], audio: [] },
+            { title: "Neend Nhi Aati Moment", img: ["images/neend-nhi-aati-moment.png"], texts: [], audio: [] },
+            { title: "Never Loose You", img: ["images/never_loose_you.png"], texts: [], audio: [] },
+            { title: "Addicted to You Moment", img: ["images/never-leave.png"], texts: [], audio: [] },
+            { title: "Nihar Lo Moment", img: ["images/niharh_lo_moment.png"], texts: [], audio: [] },
+            { title: "Obsessed", img: ["images/obsessed.png"], texts: [], audio: [] },
+            { title: "Permanent Booking Moment", img: ["images/permanent_booking_moment.png"], texts: [], audio: [] },
+            { title: "Meri Priority Moment", img: ["images/priority.png"], texts: [], audio: [] },
+            { title: "Sath Mein Bungy", img: ["images/sath-mein-bungy.png"], texts: [], audio: [] },
+            { title: "Shaddi Moment", img: ["images/shaddi-moment.png"], texts: [], audio: [] },
+            { title: "The First Moment", img: ["images/the_first_moment.png"], texts: [], audio: [] },
+            { title: "Trust Karungi Moment", img: ["images/trust_karungi_moment.png"], texts: [], audio: [] },
+            { title: "Tumhari Hi Rahungi", img: ["images/tumhari-hi-rahungi.png"], texts: [], audio: [] },
+            { title: "Your Wish From Me", img: ["images/your_wish_from_me.png"], texts: [], audio: [] },
+            { title: "Your Dream With Me", img: ["images/your-dream-with-me.png"], texts: [], audio: [] },
+            { title: "Yours & Only Yours Moment", img: ["images/yours-n-yours.png"], texts: [], audio: [] },
+            {
+                title: "Some Audio moments",
+                texts: ["Best feeling moments"],
+                img: [],
+                audio: ["audio/audio-1.mp4", "audio/audio-2.mp4"]
+            },
+            {
+                title: "",
+                texts: ["Repeat pe sunne wali moments"],
+                img: [],
+                audio: ["audio/audio-3.mp4", "audio/audio-4.mp4", "audio/audio-5.mp4"]
+            },
+            {
+                title: "",
+                texts: ["Jaldi aa ja moments"],
+                img: [],
+                audio: ["audio/audio-6.mp4", "audio/audio-7.mp4"]
+            },
+            {
+                title: "Iske alawa hamare dreams",
+                texts: ["Travel Spiti with bike", "Sath mein bungy karna", "Northeast ghumna"],
+                img: [],
+                audio: []
+            },
+            {
+                title: "Dreams",
+                texts: ["Pahado pe rehna", "Chandratal Lake dekhna"],
+                img: [],
+                audio: []
+            },
+            {
+                title: "Endless Calls",
+                texts: ["Iske alawa ghanto baatein karna, still remeber hum isliye call kat dete the kyuki subah mummy utth jati thi meri"],
+                img: [],
+                audio: []
+            },
+            {
+                title: "",
+                texts: ["Even you told my behena ki you are luckiest to find me as patner and I will be safe with you"],
+                img: [],
+                audio: []
+            },
+            {
+                title: "",
+                texts: ["I know these moments were not just sirf friends hai moments, you also know that, I will not force you to be in relationship, but atleast allow me in your life, you need time take your time but just for trust issues don't cut me off"],
+                img: [],
+                audio: []
+            },
+        ];
+
+        let currentPage = 0;
+        let start = true;
+        const title = document.getElementById("page-title");
+        const contentContainer = document.getElementById("content-container");
+        const imageContainer = document.getElementById("image-container");
+        const audioContainer = document.getElementById("audio-container");
+        const stickyNote = document.getElementById("sticky-note");
+
+        function updatePage() {
+            title.innerHTML = pages[currentPage].title;
+            contentContainer.innerHTML = "";
+            imageContainer.innerHTML = "";
+            audioContainer.innerHTML = "";
+
+            // Handle texts
+            if (pages[currentPage].texts.length > 0) {
+                pages[currentPage].texts.forEach(text => {
+                    const textBox = document.createElement("p");
+                    textBox.classList.add("text-box");
+                    textBox.textContent = text;
+                    contentContainer.appendChild(textBox);
+                });
+                contentContainer.style.display = "block";
+            } else {
+                contentContainer.style.display = "none";
+            }
+
+            // Handle images
+            if (pages[currentPage].img.length > 0) {
+                pages[currentPage].img.forEach((src, index) => {
+                    const img = document.createElement("img");
+                    img.src = src;
+                    img.style.zIndex = pages[currentPage].img.length - index;
+                    img.style.transform = `translate(${index * 10}px, ${index * 10}px)`;
+                    imageContainer.appendChild(img);
+                });
+                imageContainer.style.display = "flex";
+            } else {
+                imageContainer.style.display = "none";
+            }
+
+            // Handle audio - each clip in a separate row
+            if (pages[currentPage].audio.length > 0) {
+                pages[currentPage].audio.forEach(audioSrc => {
+                    const audioWrapper = document.createElement("div");
+                    audioWrapper.classList.add("audio-container");
+                    audioWrapper.style.width = "100%"; // Ensure each audio clip is in a separate row
+                    audioWrapper.innerHTML = `<span>🎵</span><audio controls src="${audioSrc}" style="width: 100%;"></audio>`;
+                    audioContainer.appendChild(audioWrapper);
+                });
+                audioContainer.style.display = "block";
+            } else {
+                audioContainer.style.display = "none";
+            }
+
+            // Handle sticky note
+            const stickyNote = document.querySelector(".sticky-note");
+            stickyNote.style.display = currentPage === 0 ? "block" : "none";
+        }
+
+
+        document.getElementById("next").addEventListener("click", () => {
+            currentPage = (currentPage + 1) % pages.length;
+            updatePage();
+        });
+
+        document.getElementById("prev").addEventListener("click", () => {
+            if(!start) currentPage = (currentPage - 1 + pages.length) % pages.length;
+            else if(currentPage != 0) { 
+                currentPage = (currentPage - 1);
+                start = false;
+            }
+            updatePage();
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowRight") document.getElementById("next").click();
+            if (e.key === "ArrowLeft") document.getElementById("prev").click();
+        });
+
+
+        updatePage();
+    </script>
+</body>
+
+</html>
